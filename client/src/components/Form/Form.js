@@ -6,6 +6,8 @@ import { createPost, updatePost } from "../../actions/posts";
 import { useDispatch, useSelector } from "react-redux";
 import useStyles from "./styles";
 
+import { useHistory } from "react-router-dom";
+
 // GET THE CURRENT ID OF THE POST
 
 const Form = ({ currentId, setCurrentId }) => {
@@ -17,9 +19,10 @@ const Form = ({ currentId, setCurrentId }) => {
     selectedFile: "",
   });
   // Finding a single post with the currentId
-  const post = useSelector((state) => (currentId ? state.posts.find((p) => p._id === currentId) : null));
+  const post = useSelector((state) => (currentId ? state.posts.posts.find((p) => p._id === currentId) : null));
   const dispatch = useDispatch();
   const user = JSON.parse(localStorage.getItem("profile"));
+  const history = useHistory();
 
   useEffect(() => {
     if (post) {
@@ -33,7 +36,7 @@ const Form = ({ currentId, setCurrentId }) => {
     if (currentId) {
       dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }));
     } else {
-      dispatch(createPost({ ...postData, name: user?.result?.name }));
+      dispatch(createPost({ ...postData, name: user?.result?.name }, history));
     }
     clear();
   };
@@ -54,7 +57,7 @@ const Form = ({ currentId, setCurrentId }) => {
   };
 
   return (
-    <Paper className={classes.paper}>
+    <Paper className={classes.paper} elevation={4}>
       <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
         <Typography variant="h6">{currentId ? "Editing" : "Creating"} a Memory</Typography>
         <TextField
