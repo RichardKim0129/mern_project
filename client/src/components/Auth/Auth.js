@@ -11,20 +11,43 @@ import { useHistory } from "react-router-dom";
 
 import Input from "./Input";
 
+import { signin, signup } from "../../actions/auth";
+
+const initialState = { firstName: "", lastName: "", email: "", password: "", confirmPassword: "" };
+
 const Auth = () => {
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
+  const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    // Always add on form submit
+    e.preventDefault();
 
-  const handleChange = () => {};
+    if (isSignup) {
+      // Sign up using the formData, sending the history so we can navigate
+      // once we do something
+      dispatch(signup(formData, history));
+    } else {
+      dispatch(signin(formData, history));
+    }
+  };
+
+  const handleChange = (e) => {
+    // This will populate the form where the input has the "name" property with the
+    // value that is typed in that slot
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   // When changing state using old state must have prevState
   const handleShowPassword = () => setShowPassword((prevState) => !prevState);
-  const switchMode = () => setIsSignup((prevState) => !prevState);
+  const switchMode = () => {
+    setIsSignup((prevState) => !prevState);
+    setShowPassword(false);
+  };
 
   const googleSuccess = async (res) => {
     const result = res?.profileObj;
